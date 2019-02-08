@@ -1,0 +1,37 @@
+body {
+  margin: 0;
+}
+
+.root {
+  font-family: Arial, Helvetica;
+  width: 98vw;
+}
+
+[data-container=container] {
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
+}
+
+section {
+  background: #ccc;
+  width: 28%;
+  margin: 1em;
+}
+
+h1 {
+  text-align: center;
+  background-color: #999999
+}
+
+p {
+  margin: 1em;
+}
+
+[data-p2=red] {
+  background-color: #e85151
+}
+
+[data-p2=green] {
+  background-color: #74f282
+}
