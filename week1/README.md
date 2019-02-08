@@ -26,9 +26,11 @@ limited to 20 flights per get request, can be modified.
 
 
 # Best practices
-[-] Used XMLHttpRequest; to get the flight information from the api.
+<s>[-] Used XMLHttpRequest; to get the flight information from the api.</s>
 
-[-] Using Get date I modified the request header to get the flight that are currently taking off.
+[-] Used promise to get the flight information from the api.
+
+[-] Using 'Get date' I modified the request header to get the flight that are currently taking off.
 
 [-] Using forEach I created a block for each departing flight.
 
