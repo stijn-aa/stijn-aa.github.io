@@ -4,7 +4,7 @@ Get your flight information from the most transparent and reliable source!
 Its all you need!
 
 
-Link: https://stijn-aa.github.io/
+Link: https://eager-euler-58eb64.netlify.com/
 
 # Function
 
