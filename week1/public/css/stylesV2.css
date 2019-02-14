@@ -14,22 +14,23 @@ body {
 }
 
 section {
-  background-image: linear-gradient(180deg,#ADADAD,#808080 80%);;
+  background-image: linear-gradient(180deg, #ADADAD, #808080 80%);
+  ;
   width: 28%;
   margin: 1em;
-  box-shadow: 0 0 11px rgba(33,33,33,.2);
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
   transition: box-shadow .3s;
-  border-radius:10px;
+  border-radius: 10px;
 }
+
 section:hover {
-  box-shadow: 0 0 20px rgba(33,33,33,.5);
+  box-shadow: 0 0 20px rgba(33, 33, 33, .5);
 }
 
 h1 {
   text-align: center;
-  text-shadow: 0 0 2px rgba(33,33,33,.2);
-color: #E3E3E3;
-
+  text-shadow: 0 0 2px rgba(33, 33, 33, .2);
+  color: #E3E3E3;
 }
 
 p {
@@ -42,6 +43,58 @@ p {
 }
 
 [data-p2=green] {
-    padding: 3px;
+  padding: 3px;
   background-color: #74f282
+}
+
+[data-status] {
+  width: 1/4fr;
+  height: auto;
+  border-radius: 3px;
+  text-align: center;
+  color: white
+}
+
+[data-status=SCH] {
+  background-color: #298b75
+}
+
+[data-status=DEL] {
+  background-color: #cf4343
+}
+
+[data-status=WIL] {
+  background-color: #2c8aad
+}
+
+[data-status=GTO] {
+  background-color: #2cad60
+}
+
+[data-status=BRD] {
+  background-color: #2cabad
+}
+
+[data-status=GTD] {
+  background-color: #e74141
+}
+
+[data-status=GCL] {
+  background-color: #a61010
+}
+
+[data-status=DEP] {
+  background-color: #d2a726
+}
+
+[data-status=CNX] {
+  background-color: #191919
+}
+
+[data-status=GCH] {
+  background-color: #475bb2
+}
+
+[data-status=TOM] {
+  background-color: #415c5e
 }

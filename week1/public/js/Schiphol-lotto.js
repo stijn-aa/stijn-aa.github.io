@@ -1,9 +1,12 @@
 'use strict'
 
+const addTime = 25;
+const time = function(dt, minutes) {
+  return new Date(dt.getTime() + minutes * 60000);
+}
+const h = time(new Date, addTime).getHours();
+const m = time(new Date, addTime).getMinutes();
 
-const d = new Date();
-const h = d.getHours();
-const m = d.getMinutes();
 
 
 // 	"app_id": "0427139b",
@@ -28,14 +31,16 @@ statusMap.set("CNX", "Cancelled");
 statusMap.set("GCH", "Gate Change");
 statusMap.set("TOM", "Tomorrow");
 
+
+
 function makeRequest() {
   return new Promise(function(resolve, reject) {
     const request = new XMLHttpRequest();
     const baseUrl = 'https://api.schiphol.nl/public-flights/flights?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30&flightdirection=D&scheduletime=';
 
-    request.open('GET', baseUrl + h + ":" + (m +20), true)
+    request.open('GET', baseUrl + h + ":" + m, true)
     request.setRequestHeader("resourceversion", "v3")
-
+console.log(baseUrl + h + ":" + m);
     request.onload = function() { //onload van de url do
       const data = JSON.parse(this.response);
       console.log(data);
@@ -52,19 +57,32 @@ function makeRequest() {
   });
 }
 
+function isBoarding(plane) {
+
+  return plane.publicFlightState.flightStates.includes("GCL");
+  console.log(string);
+}
+
 
 function createPlanes(planes) {
-  console.log(planes);
-  for (const plane of planes) {
+    var boarding_array = planes.filter(isBoarding);
+  //console.log(planes);
 
-    const [last] = plane.publicFlightState.flightStates.reverse()
+  for (const boardingPlane of boarding_array) {
 
-    console.log(plane.flightName);
-    console.log(plane.gate);
-    console.log(plane.scheduleTime);
-    console.log(plane.route.destinations);
-    console.log(last);
-    console.log(statusMap.get(last));
+
+    // console.log(boarding_array);
+    // console.log(h);
+    // console.log(m);
+    // console.log(boardingPlane.publicFlightState.flightStates);
+    const [last] = boardingPlane.publicFlightState.flightStates.reverse()
+
+    // console.log(boardingPlane.flightName);
+    // console.log(boardingPlane.gate);
+    // console.log(boardingPlane.scheduleTime);
+    // console.log(boardingPlane.route.destinations);
+    // console.log(last);
+    // console.log(statusMap.get(last));
 
     const section = document.createElement('section');
     const h1 = document.createElement('h1');
@@ -75,16 +93,16 @@ function createPlanes(planes) {
 
     status.setAttribute('data-status', last);
 
-    if (plane.scheduleTime <= h + ":" + m + ":" + "00") {
+    if (boardingPlane.scheduleTime <= h + ":" + m + ":" + "00") {
       p2.setAttribute('data-p2', 'red');
     } else {
       p2.setAttribute('data-p2', 'green');
     }
 
-    h1.textContent = "Flight: " + plane.flightName;
-    p1.textContent = "Gate: " + plane.gate;
-    p2.textContent = plane.scheduleTime;
-    p3.textContent = "destinations: " + plane.route.destinations;
+    h1.textContent = "Flight: " + boardingPlane.flightName;
+    p1.textContent = "Gate: " + boardingPlane.gate;
+    p2.textContent = boardingPlane.scheduleTime;
+    p3.textContent = "destinations: " + boardingPlane.route.destinations;
     status.textContent = statusMap.get(last);
 
     container.appendChild(section);
