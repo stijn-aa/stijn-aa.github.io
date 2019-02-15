@@ -1,4 +1,3 @@
-
 'use strict'
 
 
@@ -45,7 +44,7 @@ const api = {
       request.onload = function() {
         if (request.status >= 200 && request.status < 400) {
           const data = JSON.parse(this.response);
-          resolve(data.flights)
+          resolve(data)
 
           console.log(data);
         } else {
@@ -66,7 +65,7 @@ const api = {
 //render
 const render = {
   overview: function(data) {
-    const filter_array = data.filter(statusFilter);
+    const filter_array = data.flights.filter(statusFilter);
     for (const plane of filter_array) {
 
       const [last] = plane.publicFlightState.flightStates.reverse();
@@ -104,24 +103,27 @@ const render = {
       section.appendChild(p2);
       section.appendChild(status);
 
-      section.addEventListener("click",function(){
+      section.addEventListener("click", function() {
         console.log(flightId);
-        routie(flightId);
+        routie("flight/" + flightId);
       })
     }
   },
-  detail: function() {
-
+  detail: function(data) {
+    console.log(data);
 
   },
 }
 
+//filter
 function statusFilter(plane) {
 
   return plane.publicFlightState.flightStates.includes("BRD");
   console.log("hier");
 }
 
+
+//router
 function mainPage() {
   const request = api.request("https://api.schiphol.nl/public-flights/flights?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30&flightdirection=D&scheduletime=" + h + ":" + m)
     .then(function(data) {
@@ -132,25 +134,25 @@ function mainPage() {
     });
 }
 
-function detailPage() {
-  const request = api.request("https://api.schiphol.nl/public-flights/flight/"+flightId+"?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30)
+function detailPage(flightId) {
+  const request = api.request("https://api.schiphol.nl/public-flights/flights/" + flightId + "?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30")
     .then(function(data) {
       console.log(data);
 
 
       render.detail(data);
     });
-}
-
-
-
-routie({
-  '': function() {
-    mainPage();
-
-  },
-  flightId: function() {
-
-
   }
-});
+
+
+
+  routie({
+    '': function() {
+      mainPage();
+
+    },
+    "flight/:flightId": function(flightId) {
+      detailPage(flightId)
+
+    }
+  });
