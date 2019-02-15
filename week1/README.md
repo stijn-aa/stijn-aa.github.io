@@ -8,17 +8,17 @@ Link: https://eager-euler-58eb64.netlify.com/
 
 # Function
 
-See the current flight taking off
+See the current flight from Schiphol with current flight status.
 
 # Actor Diagram
-
+![interaction diagram](./public/img/actor_diagram.png)
 
 # API
 [-]	Schiphol Flight API
 
 https://developer.schiphol.nl/
 
-limited to 20 flights per get request, can be modified.
+limited to 20 flights per page.
 
 # Interaction
 
@@ -34,9 +34,14 @@ limited to 20 flights per get request, can be modified.
 
 [-] Using forEach I created a block for each departing flight.
 
+[-] Used object literals to request and render different pages.
+
+[-] added Router to detail pages of flights
+
 # Feature Wishlist
 
-## [📇] Clickable blocks to get more info about the flight status
+## [📇] fix 404 flight not found when you click on a plane
+
 ## [💉] Nice UI
 
-## [🎰] Free ticket generator!
+## [🎰] Filter options dropdown for different flight times and flight status
