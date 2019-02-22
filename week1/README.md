@@ -1,47 +1,20 @@
-# Real Flight Info
+## To do list
 
-Get your flight information from the most transparent and reliable source!
-Its all you need!
+[-] <s>Make utility's object literal including date variable, map and routie / init</s>
 
+[-] <s>Make iffy</s>
 
-Link: https://eager-euler-58eb64.netlify.com/
+<s>[-] <s>Make filter object literal</s> inside app literal
+</s>
 
-# Function
+[-] <s>Make router object literal </s>
 
-See the current flight from Schiphol with current flight status.
+[-] Make make filter interactive
 
-# Actor Diagram
-![interaction diagram](./public/img/actor_diagram.png)
+[-] Make add time interactive
 
-# API
-[-]	Schiphol Flight API
+[-] Fix 404 not found detail
 
-https://developer.schiphol.nl/
+[-] Create countdown
 
-limited to 20 flights per page.
-
-# Interaction
-
-![interaction diagram](./public/img/interaction_diagram.png)
-
-
-# Best practices
-<s>[-] Used XMLHttpRequest; to get the flight information from the api.</s>
-
-[-] Used promise to get the flight information from the api.
-
-[-] Using 'Get date' I modified the request header to get the flight that are currently taking off.
-
-[-] Using forEach I created a block for each departing flight.
-
-[-] Used object literals to request and render different pages.
-
-[-] added Router to detail pages of flights
-
-# Feature Wishlist
-
-## [📇] fix 404 flight not found when you click on a plane
-
-## [💉] Nice UI
-
-## [🎰] Filter options dropdown for different flight times and flight status
+[-] Make template engine
