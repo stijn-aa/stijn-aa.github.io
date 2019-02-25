@@ -9,12 +9,10 @@
 
 [-] <s>Make router object literal </s>
 
+[-] <s>Fix 404 not found detail</s>
+
+[-]<s> Make template engine</s>
+
 [-] Make make filter interactive
 
 [-] Make add time interactive
-
-[-] <s>Fix 404 not found detail</s>
-
-[-] Create countdown
-
-[-]<s> Make template engine</s>

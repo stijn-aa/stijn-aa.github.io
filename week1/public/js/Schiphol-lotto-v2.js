@@ -15,12 +15,19 @@
   const container = document.createElement("div"); //maak container variabele met div html element
   container.setAttribute("data-container", "container"); //zet custom class data-container = container aan container variabele
   app.appendChild(container); //maak container html element chiled van app
+  let statusFilterLet = undefined;
 
   const utils = {
 
     statusFilter: function(plane) {
 
-      return plane //.publicFlightState.flightStates.includes("BRD");
+      if (statusFilterLet != undefined) {
+
+        return plane.publicFlightState.flightStates.includes(statusFilterLet);
+        console.log(plane.publicFlightState.flightStates.includes(statusFilterLet));
+      } else {
+        return true;
+      }
     }
 
 
@@ -75,22 +82,25 @@
   //render
   const renderer = {
     overview: function(data) {
+
+      template.filterTemplate(data);
       const filter_array = data.flights.filter(utils.statusFilter);
 
       for (const plane of filter_array) {
 
-
         const flightName = plane.flightName;
         const flightId = plane.id;
         const scheduleTime = plane.scheduleTime;
-
+        const [last] = plane.publicFlightState.flightStates.reverse();
+        const status = statusMap.get(last);
 
         const mainOverview = document.querySelector("[data-container]");
 
+        template.mainpageTemplate(mainOverview, flightId, flightName, scheduleTime, status, last);
 
-        template.mainpagetemplate(mainOverview, flightId, flightName, scheduleTime);
 
       }
+
 
     },
 
@@ -103,26 +113,20 @@
       const destinations = data.route.destinations;
       const [last] = data.publicFlightState.flightStates.reverse();
       const status = statusMap.get(last);
-      console.log(last);
-
-
-
-
 
       const detailOverview = document.querySelector("[data-container]");
 
-      template.detailpagetemplate(detailOverview, flightName, flightId, gate, scheduleTime, destinations, status, last);
-    }
+      template.detailpageTemplate(detailOverview, flightName, flightId, gate, scheduleTime, destinations, status, last);
+    },
 
   }
 
 
-
   //template enigne
   const template = {
-    mainpagetemplate: function(container, flightId, flightName, scheduleTime) {
+    mainpageTemplate: function(mainOverview, flightId, flightName, scheduleTime, status, last) {
 
-      console.log(flightId);
+
       const article = document.createElement('article')
       const section = document.createElement("section");
       let mainpagetempalte =
@@ -130,6 +134,7 @@
         <h1 class="flightName">Flight: ${flightName} </h1>
         <p class="id${flightId}">${flightId}</p>
         <p class="scheduleTime">${scheduleTime}</p>
+        <div data-status="${last}">${status}</div>
 
       `
 
@@ -139,7 +144,7 @@
 
 
       section.addEventListener("click", function() {
-        console.log(flightId);
+
         routie("flight/" + flightId);
 
       })
@@ -147,8 +152,9 @@
       Transparency.render(container);
     },
 
-    detailpagetemplate: function(detailOverview, flightName, flightId, gate, scheduleTime, destinations, status, last) {
-      console.log(last);
+
+    detailpageTemplate: function(detailOverview, flightName, flightId, gate, scheduleTime, destinations, status, last) {
+
       const article = document.createElement('article')
       const section = document.createElement("section");
 
@@ -165,7 +171,6 @@
       container.appendChild(section);
       section.appendChild(article);
 
-
       section.addEventListener("click", function() {
         routie('');
       })
@@ -175,13 +180,73 @@
 
     error404: function(flightId) {
 
-
       const error = document.querySelector(`.id${flightId}`);
       error.setAttribute("data-fail", "nope");
 
-
       Transparency.render(error);
       error.textContent = flightId;
+    },
+
+    filterTemplate: function(data) {
+      console.log(statusFilterLet);
+
+      const header = document.createElement('header')
+      const filterdiv = document.createElement("div");
+      const boarding = document.createElement('p')
+      const gateClosed = document.createElement('p')
+      const gateClosing = document.createElement('p')
+      const reset = document.createElement('p')
+
+      app.appendChild(filterdiv);
+      filterdiv.appendChild(header);
+      header.appendChild(boarding);
+      header.appendChild(gateClosed);
+      header.appendChild(gateClosing);
+      header.appendChild(reset);
+
+      boarding.setAttribute('data-button','filter');
+      gateClosed.setAttribute('data-button','filter');
+      gateClosing.setAttribute('data-button','filter');
+      reset.setAttribute('data-button','filter');
+
+      boarding.textContent = "Boarding";
+      gateClosed.textContent = "Gate Closed";
+      gateClosing.textContent = 'Gate Closing';
+      reset.textContent = "all";
+
+
+      boarding.addEventListener("click", function() {
+        statusFilterLet = "BRD";
+        console.log(statusFilterLet);
+        container.innerHTML = '';
+        filterdiv.innerHTML = '';
+        renderer.overview(data);
+      })
+
+      gateClosed.addEventListener("click", function() {
+        statusFilterLet = "GTD";
+        console.log(statusFilterLet);
+        container.innerHTML = '';
+        filterdiv.innerHTML = '';
+        renderer.overview(data);
+      })
+      gateClosing.addEventListener("click", function() {
+        statusFilterLet = "GCL";
+        console.log(statusFilterLet);
+        container.innerHTML = '';
+        filterdiv.innerHTML = '';
+        renderer.overview(data);
+      })
+      reset.addEventListener("click", function() {
+        statusFilterLet = undefined;
+        console.log(statusFilterLet);
+        container.innerHTML = '';
+        filterdiv.innerHTML = '';
+        renderer.overview(data);
+      })
+
+
+
     }
 
   }
