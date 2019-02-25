@@ -34,7 +34,7 @@ h1 {
 }
 
 p {
-  margin: 1em;
+  margin: 9px;
 }
 
 [data-p2=red] {
@@ -55,7 +55,18 @@ p {
   color: white
 }
 
+[data-fail=nope] {
+  background-color: #ff0000;
+  border-radius: 4px;
+  color: white;
+
+}
+
 [data-status=SCH] {
+  background-color: #298b75
+}
+
+[data-status=EXP] {
   background-color: #298b75
 }
 

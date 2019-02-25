@@ -13,8 +13,8 @@
 
 [-] Make add time interactive
 
-[-] Fix 404 not found detail
+[-] <s>Fix 404 not found detail</s>
 
 [-] Create countdown
 
-[-] Make template engine
+[-]<s> Make template engine</s>
