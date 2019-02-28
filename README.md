@@ -33,7 +33,7 @@ limited to 20 flights per page.
 
 # Interaction
 
-![interaction diagram](./week1/public/img/interaction_diagram2.png)
+![interaction diagram](./week1/public/img/interaction_diagram.png)
 
 
 # features
