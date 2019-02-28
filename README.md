@@ -22,7 +22,7 @@ See the current flight from Schiphol with current flight status.
 
 
 # Actor Diagram
-![interaction diagram](./week1/public/img/actor_diagram.png)
+![interaction diagram](./public/img/actor_diagram.png)
 
 # API
 [-]	Schiphol Flight API
@@ -33,7 +33,7 @@ limited to 20 flights per page.
 
 # Interaction
 
-![interaction diagram](./week1/public/img/interaction_diagram.png)
+![interaction diagram](./public/img/interaction_diagram.png)
 
 
 # features
