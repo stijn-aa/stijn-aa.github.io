@@ -10,6 +10,17 @@ Link: https://eager-euler-58eb64.netlify.com/
 
 See the current flight from Schiphol with current flight status.
 
+# Best practises
+
+[-] Vars are declared at the top of scope
+
+[-] Using strict mode
+
+[-] Indentations with tabs
+
+[-] End statements with semicolon
+
+
 # Actor Diagram
 ![interaction diagram](./week1/public/img/actor_diagram.png)
 
@@ -25,23 +36,29 @@ limited to 20 flights per page.
 ![interaction diagram](./week1/public/img/interaction_diagram.png)
 
 
-# Best practices
+# features
 <s>[-] Used XMLHttpRequest; to get the flight information from the api.</s>
 
 [-] Used promise to get the flight information from the api.
 
 [-] Using 'Get date' I modified the request header to get the flight that are currently taking off.
 
-[-] Using forEach I created a block for each departing flight.
+[-] no global variables
 
 [-] Used object literals to request and render different pages.
 
 [-] added Router to detail pages of flights
 
-# Feature Wishlist
+[-] added filter to filter specific flight status
+
+# Nice to have
 
 ## [📇] fix 404 flight not found when you click on a plane
 
 ## [💉] Nice UI
 
-## [🎰] Filter options dropdown for different flight times and flight status
+## [🎰] local storage for api data
+
+## [🎰] handler object literal
+
+## [🎰] modules

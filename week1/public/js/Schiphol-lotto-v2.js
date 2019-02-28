@@ -1,34 +1,21 @@
 (function() {
   'use strict'
 
-
-
-  // 	"app_id": "0427139b",
-  // 	"app_key": "a549c3417098166fc5a707cc9def2a30"
-
-
-
-
-
   const utils = {
-    statusFilterLet: undefined,
-    self: this,
     statusFilter: function(plane) {
+      console.log(storage.statusFilterLet);
+      if (storage.statusFilterLet != undefined) {
 
-      if (self.statusFilterLet != undefined) {
-
-        return plane.publicFlightState.flightStates.includes(self.statusFilterLet);
+        return plane.publicFlightState.flightStates.includes(storage.statusFilterLet);
 
       } else {
         return true;
       }
     }
-
-
   }
 
   //app object?
-  var app = {
+  var application = {
     init: function() {
       storage.setMap();
       router.init();
@@ -53,6 +40,7 @@
       storage.statusMap.set("TOM", "Tomorrow");
       storage.statusMap.set("EXP", "Landing");
     },
+    statusFilterLet: undefined,
     addTime: "0",
     time: function(newDate) {
       return new Date(newDate.getTime() + this.addTime * 60000);
@@ -64,28 +52,29 @@
     getCurrentMinutes: function() {
       return this.time(new Date).getMinutes()
     },
+
   }
 
-  //api request "https://api.schiphol.nl/public-flights/flights/" + flightId + "?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30")
-  const api = {
-    url: '',
-
+  const storageTwo = { //this.urlcontent.endpoint and storage.urlcontent.endpoint dont work within storage so made a second storage unit. Will be fixed when moving to modules
     urlcontent: {
       endpoint: 'https://api.schiphol.nl/public-flights/flights',
       apiKey: '?&app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30',
       direction: '&flightdirection=d',
       hour: "&scheduletime=" + storage.getCurrentHours() + ":",
-      minutes: storage.getCurrentMinutes(),
+      minutes: storage.getCurrentMinutes()
+    }
+  }
 
-    },
+
+  const api = {
+    url: '',
     self: this,
-    // url fixen
-    request: function(flightId) {
+    request: function(flightId,flightName) {
 
       if (flightId === undefined) {
-        api.url = Object.values(this.urlcontent).join("");
+        api.url = Object.values(storageTwo.urlcontent).join("");
       } else {
-        api.url = self.urlcontent.endpoint + "/" + flightId + self.urlcontent.apikey;
+        api.url = storageTwo.urlcontent.endpoint + "/" + flightId + "/codeshares/"+ flightName + storageTwo.urlcontent.apiKey;
       }
 
 
@@ -113,26 +102,24 @@
       })
 
     },
-
-
   }
 
 
-
   //render
-  const renderer = {
+  const render = {
     overview: function(data) {
+      template.empty();
+      template.containers();
+      template.filterSet(data);
 
-      template.filter(data);
+      console.log(data);
       const filter_array = data.flights.filter(utils.statusFilter);
-
+      console.log(filter_array);
       for (const plane of filter_array) {
-
         const flightName = plane.flightName;
         const flightId = plane.id;
         const scheduleTime = plane.scheduleTime;
         const [statuslast] = plane.publicFlightState.flightStates.reverse();
-
         const status = storage.statusMap.get(statuslast);
 
 
@@ -154,9 +141,11 @@
       const scheduleTime = data.scheduleTime;
       const destinations = data.route.destinations;
       const [statuslast] = data.publicFlightState.flightStates.reverse();
-      const status = statusMap.get(statuslast);
+      const status = storage.statusMap.get(statuslast);
 
-
+      template.empty();
+      template.containers();
+      template.filterSet(data)
 
       template.detailPage(flightName, flightId, gate, scheduleTime, destinations, status, statuslast);
     },
@@ -165,12 +154,25 @@
 
   //template enigne
   const template = {
+    containers: function() {
+      const container = document.createElement('div')
+      const app = document.querySelector(".root");
+      container.setAttribute("data-container", "container");
+      app.appendChild(container);
+    },
+
+    empty: function() {
+      const root = document.querySelector(".root");
+      root.innerHTML = '';
+    },
+
     element: function(flightId, flightName, scheduleTime, status, statuslast) {
 
 
       const article = document.createElement('article')
       const section = document.createElement("section");
       const container = document.querySelector("[data-container]");
+
       let elementTempalte =
         `
         <h1 class="flightName">Flight: ${flightName} </h1>
@@ -180,20 +182,19 @@
 
       `
 
-      article.innerHTML = elementTempalte
+
       container.appendChild(section);
       section.appendChild(article);
-
+      article.innerHTML = elementTempalte
 
       section.addEventListener("click", function() {
 
-        routie("flight/" + flightId);
+        routie("flight/" + flightId + flightName);
 
       })
+      console.log(article)
 
-      Transparency.render(container);
     },
-
 
     detailPage: function(flightName, flightId, gate, scheduleTime, destinations, status, statuslast) {
 
@@ -218,7 +219,6 @@
         routie('');
       })
 
-      Transparency.render(container);
     },
 
     error404: function(flightId) {
@@ -226,12 +226,11 @@
       const error = document.querySelector(`.id${flightId}`);
       error.setAttribute("data-fail", "nope");
 
-      Transparency.render(error);
       error.textContent = flightId;
     },
 
-    filter: function(data) {
-      console.log(utils.statusFilterLet);
+    filterSet: function(data) {
+      console.log(storage.statusFilterLet);
 
       const header = document.createElement('header')
       const filterdiv = document.createElement("div");
@@ -261,33 +260,29 @@
 
 
       boarding.addEventListener("click", function() {
-        utils.statusFilterLet = "BRD";
-        console.log(utils.statusFilterLet);
-        app.innerHTML = '';
-        filterdiv.innerHTML = '';
-        renderer.overview(data);
+        storage.statusFilterLet = "BRD";
+        console.log(storage.statusFilterLet);
+
+        render.overview(data);
       })
 
       gateClosed.addEventListener("click", function() {
-        utils.statusFilterLet = "GTD";
-        console.log(utils.statusFilterLet);
-        app.innerHTML = '';
-        filterdiv.innerHTML = '';
-        renderer.overview(data);
+        storage.statusFilterLet = "GTD";
+        console.log(storage.statusFilterLet);
+
+        render.overview(data);
       })
       gateClosing.addEventListener("click", function() {
-        utils.statusFilterLet = "GCL";
-        console.log(utils.statusFilterLet);
-        app.innerHTML = '';
-        filterdiv.innerHTML = '';
-        renderer.overview(data);
+        storage.statusFilterLet = "GCL";
+        console.log(storage.statusFilterLet);
+
+        render.overview(data);
       })
       reset.addEventListener("click", function() {
-        utils.statusFilterLet = undefined;
-        console.log(utils.statusFilterLet);
-        app.innerHTML = '';
-        filterdiv.innerHTML = '';
-        renderer.overview(data);
+        storage.statusFilterLet = undefined;
+        console.log(storage.statusFilterLet);
+
+        render.overview(data);
       })
 
 
@@ -304,8 +299,8 @@
           router.mainpage();
 
         },
-        "flight/:flightId": function(flightId) {
-          router.detailpage(flightId)
+        "flight/:flightId:flightName": function(flightId,flightName) {
+          router.detailpage(flightId,flightName)
 
         }
       });
@@ -317,22 +312,22 @@
         .then(function(data) {
           console.log(data);
 
-          renderer.overview(data);
+          render.overview(data);
         });
     },
 
-    detailpage: function(flightId) {
+    detailpage: function(flightId,flightName) {
       //const request = api.request("https://api.schiphol.nl/public-flights/flights/" + flightId + "?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30", flightId)
-      const request = api.request(flightId)
+      const request = api.request(flightId,flightName)
         .then(function(data) {
           console.log(data);
 
 
-          renderer.detail(data);
+          render.detail(data);
         });
     }
   }
 
   // start application
-  app.init();
+  application.init();
 })();
