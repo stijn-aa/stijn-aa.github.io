@@ -1,30 +1,24 @@
 (function() {
   'use strict'
 
-  const addTime = 0;
-  const time = function(dt, minutes) {
-    return new Date(dt.getTime() + minutes * 60000);
-  }
-  const h = time(new Date, addTime).getHours();
-  const m = time(new Date, addTime).getMinutes();
+
 
   // 	"app_id": "0427139b",
   // 	"app_key": "a549c3417098166fc5a707cc9def2a30"
 
-  const app = document.querySelector(".root"); //link niewe variabele app aan class root
-  const container = document.createElement("div"); //maak container variabele met div html element
-  container.setAttribute("data-container", "container"); //zet custom class data-container = container aan container variabele
-  app.appendChild(container); //maak container html element chiled van app
-  let statusFilterLet = undefined;
+
+
+
 
   const utils = {
-
+    statusFilterLet: undefined,
+    self: this,
     statusFilter: function(plane) {
 
-      if (statusFilterLet != undefined) {
+      if (self.statusFilterLet != undefined) {
 
-        return plane.publicFlightState.flightStates.includes(statusFilterLet);
-        console.log(plane.publicFlightState.flightStates.includes(statusFilterLet));
+        return plane.publicFlightState.flightStates.includes(self.statusFilterLet);
+
       } else {
         return true;
       }
@@ -32,29 +26,72 @@
 
 
   }
-  const statusMap = new Map();
-  statusMap.set("SCH", "Flight Scheduled");
-  statusMap.set("DEL", "Delayed");
-  statusMap.set("WIL", "Wait in lounge");
-  statusMap.set("GTO", "Gate Open");
-  statusMap.set("BRD", "Boarding");
-  statusMap.set("GCL", "Gate Closing");
-  statusMap.set("GTD", "Gate Closed");
-  statusMap.set("DEP", "Departed");
-  statusMap.set("CNX", "Cancelled");
-  statusMap.set("GCH", "Gate Change");
-  statusMap.set("TOM", "Tomorrow");
-  statusMap.set("EXP", "Landing");
 
+  //app object?
+  var app = {
+    init: function() {
+      storage.setMap();
+      router.init();
 
+    }
+  }
 
-  //api request
+  // data object?
+  var storage = {
+    statusMap: new Map(),
+    setMap: function() {
+      storage.statusMap.set("SCH", "Flight Scheduled");
+      storage.statusMap.set("DEL", "Delayed");
+      storage.statusMap.set("WIL", "Wait in lounge");
+      storage.statusMap.set("GTO", "Gate Open");
+      storage.statusMap.set("BRD", "Boarding");
+      storage.statusMap.set("GCL", "Gate Closing");
+      storage.statusMap.set("GTD", "Gate Closed");
+      storage.statusMap.set("DEP", "Departed");
+      storage.statusMap.set("CNX", "Cancelled");
+      storage.statusMap.set("GCH", "Gate Change");
+      storage.statusMap.set("TOM", "Tomorrow");
+      storage.statusMap.set("EXP", "Landing");
+    },
+    addTime: "0",
+    time: function(newDate) {
+      return new Date(newDate.getTime() + this.addTime * 60000);
 
+    },
+    getCurrentHours: function() {
+      return this.time(new Date).getHours()
+    },
+    getCurrentMinutes: function() {
+      return this.time(new Date).getMinutes()
+    },
+  }
+
+  //api request "https://api.schiphol.nl/public-flights/flights/" + flightId + "?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30")
   const api = {
-    request: function(url, flightId) {
+    url: '',
+
+    urlcontent: {
+      endpoint: 'https://api.schiphol.nl/public-flights/flights',
+      apiKey: '?&app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30',
+      direction: '&flightdirection=d',
+      hour: "&scheduletime=" + storage.getCurrentHours() + ":",
+      minutes: storage.getCurrentMinutes(),
+
+    },
+    self: this,
+    // url fixen
+    request: function(flightId) {
+
+      if (flightId === undefined) {
+        api.url = Object.values(this.urlcontent).join("");
+      } else {
+        api.url = self.urlcontent.endpoint + "/" + flightId + self.urlcontent.apikey;
+      }
+
+
       return new Promise(function(resolve, reject) {
         const request = new XMLHttpRequest();
-        request.open("GET", url, true);
+        request.open("GET", api.url, true);
         request.setRequestHeader("resourceversion", "v3");
 
         request.onload = function() {
@@ -74,7 +111,10 @@
         }
         request.send();
       })
-    }
+
+    },
+
+
   }
 
 
@@ -83,7 +123,7 @@
   const renderer = {
     overview: function(data) {
 
-      template.filterTemplate(data);
+      template.filter(data);
       const filter_array = data.flights.filter(utils.statusFilter);
 
       for (const plane of filter_array) {
@@ -91,12 +131,14 @@
         const flightName = plane.flightName;
         const flightId = plane.id;
         const scheduleTime = plane.scheduleTime;
-        const [last] = plane.publicFlightState.flightStates.reverse();
-        const status = statusMap.get(last);
+        const [statuslast] = plane.publicFlightState.flightStates.reverse();
 
-        const mainOverview = document.querySelector("[data-container]");
+        const status = storage.statusMap.get(statuslast);
 
-        template.mainpageTemplate(mainOverview, flightId, flightName, scheduleTime, status, last);
+
+
+
+        template.element(flightId, flightName, scheduleTime, status, statuslast);
 
 
       }
@@ -111,34 +153,34 @@
       const gate = data.gate;
       const scheduleTime = data.scheduleTime;
       const destinations = data.route.destinations;
-      const [last] = data.publicFlightState.flightStates.reverse();
-      const status = statusMap.get(last);
+      const [statuslast] = data.publicFlightState.flightStates.reverse();
+      const status = statusMap.get(statuslast);
 
-      const detailOverview = document.querySelector("[data-container]");
 
-      template.detailpageTemplate(detailOverview, flightName, flightId, gate, scheduleTime, destinations, status, last);
+
+      template.detailPage(flightName, flightId, gate, scheduleTime, destinations, status, statuslast);
     },
 
   }
 
-
   //template enigne
   const template = {
-    mainpageTemplate: function(mainOverview, flightId, flightName, scheduleTime, status, last) {
+    element: function(flightId, flightName, scheduleTime, status, statuslast) {
 
 
       const article = document.createElement('article')
       const section = document.createElement("section");
-      let mainpagetempalte =
+      const container = document.querySelector("[data-container]");
+      let elementTempalte =
         `
         <h1 class="flightName">Flight: ${flightName} </h1>
         <p class="id${flightId}">${flightId}</p>
         <p class="scheduleTime">${scheduleTime}</p>
-        <div data-status="${last}">${status}</div>
+        <div data-status="${statuslast}">${status}</div>
 
       `
 
-      article.innerHTML = mainpagetempalte
+      article.innerHTML = elementTempalte
       container.appendChild(section);
       section.appendChild(article);
 
@@ -153,10 +195,11 @@
     },
 
 
-    detailpageTemplate: function(detailOverview, flightName, flightId, gate, scheduleTime, destinations, status, last) {
+    detailPage: function(flightName, flightId, gate, scheduleTime, destinations, status, statuslast) {
 
       const article = document.createElement('article')
       const section = document.createElement("section");
+      const container = document.querySelector("[data-container]");
 
       let detailpagetempalte =
         `
@@ -164,7 +207,7 @@
         <p class="gate">Gate: ${gate}</p>
         <p class="scheduleTime">ScaduleTime of depature: ${scheduleTime}</p>
         <p class="destinations">Destination tag: ${destinations}</p>
-        <div data-status="${last}">${status}</div>
+        <div data-status="${statuslast}">${status}</div>
       `
 
       article.innerHTML = detailpagetempalte;
@@ -187,8 +230,8 @@
       error.textContent = flightId;
     },
 
-    filterTemplate: function(data) {
-      console.log(statusFilterLet);
+    filter: function(data) {
+      console.log(utils.statusFilterLet);
 
       const header = document.createElement('header')
       const filterdiv = document.createElement("div");
@@ -196,6 +239,8 @@
       const gateClosed = document.createElement('p')
       const gateClosing = document.createElement('p')
       const reset = document.createElement('p')
+      const app = document.querySelector(".root");
+      const container = document.querySelector("[data-container]");
 
       app.appendChild(filterdiv);
       filterdiv.appendChild(header);
@@ -204,10 +249,10 @@
       header.appendChild(gateClosing);
       header.appendChild(reset);
 
-      boarding.setAttribute('data-button','filter');
-      gateClosed.setAttribute('data-button','filter');
-      gateClosing.setAttribute('data-button','filter');
-      reset.setAttribute('data-button','filter');
+      boarding.setAttribute('data-button', 'filter');
+      gateClosed.setAttribute('data-button', 'filter');
+      gateClosing.setAttribute('data-button', 'filter');
+      reset.setAttribute('data-button', 'filter');
 
       boarding.textContent = "Boarding";
       gateClosed.textContent = "Gate Closed";
@@ -216,31 +261,31 @@
 
 
       boarding.addEventListener("click", function() {
-        statusFilterLet = "BRD";
-        console.log(statusFilterLet);
-        container.innerHTML = '';
+        utils.statusFilterLet = "BRD";
+        console.log(utils.statusFilterLet);
+        app.innerHTML = '';
         filterdiv.innerHTML = '';
         renderer.overview(data);
       })
 
       gateClosed.addEventListener("click", function() {
-        statusFilterLet = "GTD";
-        console.log(statusFilterLet);
-        container.innerHTML = '';
+        utils.statusFilterLet = "GTD";
+        console.log(utils.statusFilterLet);
+        app.innerHTML = '';
         filterdiv.innerHTML = '';
         renderer.overview(data);
       })
       gateClosing.addEventListener("click", function() {
-        statusFilterLet = "GCL";
-        console.log(statusFilterLet);
-        container.innerHTML = '';
+        utils.statusFilterLet = "GCL";
+        console.log(utils.statusFilterLet);
+        app.innerHTML = '';
         filterdiv.innerHTML = '';
         renderer.overview(data);
       })
       reset.addEventListener("click", function() {
-        statusFilterLet = undefined;
-        console.log(statusFilterLet);
-        container.innerHTML = '';
+        utils.statusFilterLet = undefined;
+        console.log(utils.statusFilterLet);
+        app.innerHTML = '';
         filterdiv.innerHTML = '';
         renderer.overview(data);
       })
@@ -251,44 +296,43 @@
 
   }
 
-
-
-
   //router
   const router = {
+    init: function() {
+      routie({
+        '': function() {
+          router.mainpage();
+
+        },
+        "flight/:flightId": function(flightId) {
+          router.detailpage(flightId)
+
+        }
+      });
+    },
 
     mainpage: function() {
-      const request = api.request("https://api.schiphol.nl/public-flights/flights?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30&flightdirection=D&scheduletime=" + h + ":" + m)
+      //const request = api.request("https://api.schiphol.nl/public-flights/flights?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30&flightdirection=D&scheduletime=" + h + ":" + m)
+      const request = api.request()
         .then(function(data) {
           console.log(data);
 
-          container.innerHTML = '';
           renderer.overview(data);
         });
     },
 
     detailpage: function(flightId) {
-      const request = api.request("https://api.schiphol.nl/public-flights/flights/" + flightId + "?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30", flightId)
+      //const request = api.request("https://api.schiphol.nl/public-flights/flights/" + flightId + "?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30", flightId)
+      const request = api.request(flightId)
         .then(function(data) {
           console.log(data);
 
-          container.innerHTML = '';
+
           renderer.detail(data);
         });
     }
   }
 
-
-
-
-  routie({
-    '': function() {
-      router.mainpage();
-
-    },
-    "flight/:flightId": function(flightId) {
-      router.detailpage(flightId)
-
-    }
-  });
+  // start application
+  app.init();
 })();
