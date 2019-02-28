@@ -12,7 +12,7 @@ See the current flight from Schiphol with current flight status.
 
 # Best practises
 
-[-] Vars are declared at the top of scope
+[-] no global variables
 
 [-] Using strict mode
 
@@ -42,8 +42,6 @@ limited to 20 flights per page.
 [-] Used promise to get the flight information from the api.
 
 [-] Using 'Get date' I modified the request header to get the flight that are currently taking off.
-
-[-] no global variables
 
 [-] Used object literals to request and render different pages.
 
