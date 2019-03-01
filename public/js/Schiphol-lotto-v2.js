@@ -62,19 +62,20 @@
       direction: '&flightdirection=d',
       hour: "&scheduletime=" + storage.getCurrentHours() + ":",
       minutes: storage.getCurrentMinutes()
-    }
+    },
+    storeFlightName: undefined,
   }
 
 
   const api = {
     url: '',
     self: this,
-    request: function(flightId,flightName) {
-
+    request: function(flightId) {
+console.log(flightId)
       if (flightId === undefined) {
         api.url = Object.values(storageTwo.urlcontent).join("");
       } else {
-        api.url = storageTwo.urlcontent.endpoint + "/" + flightId + "/codeshares/"+ flightName + storageTwo.urlcontent.apiKey;
+        api.url = storageTwo.urlcontent.endpoint + "/" + flightId + storageTwo.urlcontent.apiKey;
       }
 
 
@@ -119,7 +120,7 @@
         const flightName = plane.flightName;
         const flightId = plane.id;
         const scheduleTime = plane.scheduleTime;
-        const [statuslast] = plane.publicFlightState.flightStates.reverse();
+        const [statuslast] = plane.publicFlightState.flightStates;
         const status = storage.statusMap.get(statuslast);
 
 
@@ -145,7 +146,7 @@
 
       template.empty();
       template.containers();
-      template.filterSet(data)
+
 
       template.detailPage(flightName, flightId, gate, scheduleTime, destinations, status, statuslast);
     },
@@ -188,11 +189,11 @@
       article.innerHTML = elementTempalte
 
       section.addEventListener("click", function() {
-
-        routie("flight/" + flightId + flightName);
+storage.storeFlightName = flightName;
+        routie("flight/" + flightId);
 
       })
-      console.log(article)
+
 
     },
 
@@ -204,6 +205,7 @@
 
       let detailpagetempalte =
         `
+
         <h1 class="flightName">Flight: ${flightName} </h1>
         <p class="gate">Gate: ${gate}</p>
         <p class="scheduleTime">ScaduleTime of depature: ${scheduleTime}</p>
@@ -230,7 +232,7 @@
     },
 
     filterSet: function(data) {
-      console.log(storage.statusFilterLet);
+
 
       const header = document.createElement('header')
       const filterdiv = document.createElement("div");
@@ -299,8 +301,9 @@
           router.mainpage();
 
         },
-        "flight/:flightId:flightName": function(flightId,flightName) {
-          router.detailpage(flightId,flightName)
+        "flight/:flightId": function(flightId) {
+          console.log(flightId)
+          router.detailpage(flightId)
 
         }
       });
@@ -310,17 +313,16 @@
       //const request = api.request("https://api.schiphol.nl/public-flights/flights?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30&flightdirection=D&scheduletime=" + h + ":" + m)
       const request = api.request()
         .then(function(data) {
-          console.log(data);
+
 
           render.overview(data);
         });
     },
 
-    detailpage: function(flightId,flightName) {
+    detailpage: function(flightId) {
       //const request = api.request("https://api.schiphol.nl/public-flights/flights/" + flightId + "?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30", flightId)
-      const request = api.request(flightId,flightName)
+      const request = api.request(flightId)
         .then(function(data) {
-          console.log(data);
 
 
           render.detail(data);
