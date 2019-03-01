@@ -4,7 +4,7 @@ Get your flight information from the most transparent and reliable source!
 Its all you need!
 
 
-Link: schipholdata.netlify.com
+Link: http://schipholdata.netlify.com
 
 # Function
 
