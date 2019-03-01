@@ -71,7 +71,7 @@
     url: '',
     self: this,
     request: function(flightId) {
-console.log(flightId)
+      console.log(flightId)
       if (flightId === undefined) {
         api.url = Object.values(storageTwo.urlcontent).join("");
       } else {
@@ -189,7 +189,7 @@ console.log(flightId)
       article.innerHTML = elementTempalte
 
       section.addEventListener("click", function() {
-storage.storeFlightName = flightName;
+        storage.storeFlightName = flightName;
         routie("flight/" + flightId);
 
       })
@@ -296,6 +296,7 @@ storage.storeFlightName = flightName;
   //router
   const router = {
     init: function() {
+
       routie({
         '': function() {
           router.mainpage();
@@ -311,12 +312,14 @@ storage.storeFlightName = flightName;
 
     mainpage: function() {
       //const request = api.request("https://api.schiphol.nl/public-flights/flights?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30&flightdirection=D&scheduletime=" + h + ":" + m)
-      const request = api.request()
-        .then(function(data) {
+      setInterval(function() {
+        const request = api.request()
+          .then(function(data) {
 
 
-          render.overview(data);
-        });
+            render.overview(data);
+          });
+      }, 5000);
     },
 
     detailpage: function(flightId) {
@@ -332,4 +335,5 @@ storage.storeFlightName = flightName;
 
   // start application
   application.init();
+
 })();
