@@ -312,14 +312,13 @@
 
     mainpage: function() {
       //const request = api.request("https://api.schiphol.nl/public-flights/flights?app_id=0427139b&app_key=a549c3417098166fc5a707cc9def2a30&flightdirection=D&scheduletime=" + h + ":" + m)
-      setInterval(function() {
-        const request = api.request()
-          .then(function(data) {
+
+      const request = api.request()
+        .then(function(data) {
 
 
-            render.overview(data);
-          });
-      }, 5000);
+          render.overview(data);
+        });
     },
 
     detailpage: function(flightId) {
