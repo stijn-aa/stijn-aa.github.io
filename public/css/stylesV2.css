@@ -1,18 +1,25 @@
 body {
   margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .root {
   display: flex;
   flex-direction: column;
   font-family: Arial, Helvetica;
-  width: 98vw;
+
+  
+}
+
+::-webkit-scrollbar { 
+  display: none; 
 }
 
 [data-container=container] {
   order:2;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto auto auto;
   margin: 0px auto;
       justify-content: center;
 }
@@ -24,11 +31,12 @@ height:19px; */
 }
 
 header {
-
   display: flex;
   margin: auto;
-      justify-content: center;
-}
+  background: #e2e2e2;
+  background-image: linear-gradient(185deg, #cacaca, #c1c1c1 80%);
+  justify-content: center;
+  box-shadow: 0 0 11px rgba(33, 33, 33, 0.14);}
 
 section {
   background-image: linear-gradient(180deg, #ADADAD, #808080 80%);
@@ -48,6 +56,12 @@ h1 {
   text-align: center;
   text-shadow: 0 0 2px rgba(33, 33, 33, .2);
   color: #E3E3E3;
+}
+h2 {
+  text-align: center;
+  text-shadow: 0 0 2px rgba(33, 33, 33, .2);
+  font-size: 40px;
+  color: #0d0a52
 }
 
 p {
@@ -77,14 +91,20 @@ p {
   border-radius: 4px;
   color: white;
 }
+svg.rw-schiphol-logo__svg{
+  margin: 15px auto 15px;
+  width: 265px;
+  height: 73px;
+}
 
 [data-button='filter'] {
   margin: 20px;
   padding: 20px;
-  background-color: orange;
+  background-color: #0d0a52;
   text-align: center;
   color: white;
   width: 100px;
+  border-radius: 10px;
 }
 
 [data-status=SCH] {
@@ -133,4 +153,27 @@ p {
 
 [data-status=TOM] {
   background-color: #415c5e
+}
+
+
+.loader>img{
+  width: 40px;
+  height: 40px;
+  animation-name: loading;
+  animation-duration: 5.5s;
+  animation-iteration-count: infinite;
+}
+.loader{
+  margin: auto;
+  text-align: center;
+
+}
+
+@keyframes loading {
+  0% {
+      transform: rotate(0deg);
+  }
+  100% {
+      transform: rotate(360deg);
+  }
 }
