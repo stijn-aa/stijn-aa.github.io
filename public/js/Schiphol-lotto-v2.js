@@ -63,8 +63,8 @@
   const urlHandler = { 
     urlcontent: {
       endpoint: 'https://cors-anywhere.herokuapp.com/https://api.schiphol.nl/public-flights/flights',
-      date: "?scheduleDate=2019-05-21",
-      hour: "&scheduleTime=18:45",
+      date: "?scheduleDate=2019-05-24",
+      hour: "&scheduleTime=11:45",
       //hour: "&scheduleTime=" + storage.getCurrentHours() + "%3A",
       //minutes: storage.getCurrentMinutes(),
       direction: '&flightDirection=D',
